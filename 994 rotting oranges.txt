@@ -1,0 +1,81 @@
+994. Rotting Oranges
+
+Medium
+
+You are given an m x n grid where each cell can have one of three values:
+---------------
+
+0 representing an empty cell,
+1 representing a fresh orange, or
+2 representing a rotten orange.
+Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten.
+
+Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.
+
+class Node {
+    int row;
+    int col;
+    int time;
+
+    public Node(int r, int c, int t) {
+        this.row = r;
+        this.col = c;
+        this.time = t;
+    }
+}
+
+class Solution {
+    public int orangesRotting(int[][] grid) {
+
+        int freshCount = 0;
+        int n = grid.length;
+        int m = grid[0].length;
+
+        int[][] visited = new int[n][m];
+        Queue<Node> q = new LinkedList<Node>();
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    freshCount++;
+                    visited[i][j] = 0;
+                } else if (grid[i][j] == 2) {
+                    q.add(new Node(i, j, 0));
+                    visited[i][j] = 1;
+                }
+            }
+        }
+        if (freshCount == 0)
+            return 0;
+
+        int cTime = 0;
+        int count = 0;
+        while (!q.isEmpty()) {
+            Node tmp = q.poll();
+            cTime = Math.max(cTime, tmp.time);
+            int a = tmp.row;
+            int b = tmp.col;
+
+            if (a - 1 >= 0 && grid[a - 1][b] == 1 && visited[a - 1][b]!=1) {
+                visited[a - 1][b] = 1;
+                q.add(new Node(a - 1, b, cTime+1)); count++;
+            }
+            if (a + 1 < n && grid[a + 1][b] == 1 && visited[a + 1][b]!=1) {
+                visited[a + 1][b] = 1;
+                q.add(new Node(a + 1, b, cTime+1)); count++;
+            }
+            if (b - 1 >= 0 && grid[a][b - 1] == 1 && visited[a][b - 1]!=1) {
+                visited[a][b - 1] = 1;
+                q.add(new Node(a, b - 1, cTime+1)); count++;
+            }
+            if (b + 1 < m && grid[a][b + 1] == 1 && visited[a][b + 1] != 1 ) {
+                visited[a][b + 1] = 1;
+                q.add(new Node(a, b + 1, cTime+1)); count++;
+            }
+
+        }
+        if(count != freshCount) return -1;
+        return cTime;
+
+    }
+}
